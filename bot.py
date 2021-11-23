@@ -9,7 +9,6 @@ import markovify
 
 path = os.path.dirname(__file__)
 
-bot_name='polibot-cs40'
 
 
 
@@ -52,11 +51,9 @@ def generate_comment():
 
 
 
-# FIXME:
-# connect to reddit 
-reddit = praw.Reddit('bot1', user_agent='cs40')
 
 
+bot_list = {'bot1':'polibot-cs40','bot2':'polibot-cs40_1','bot3':'polibot-cs40_2','bot4':'polibot-cs40_3','bot5':'polibot-cs40_4'}
 
 
 
@@ -77,6 +74,15 @@ reddit = praw.Reddit('bot1', user_agent='cs40')
 # you can change this while loop to an if statement to make the code run only once
 
 while True:
+
+    # FIXME:
+    # connect to reddit 
+    bot = 'bot' + str(random.randint(1,5))
+    bot_name = bot_list[bot]
+
+    print('bot: '+bot + ' \nbotname: ' + bot_name)    
+
+    reddit = praw.Reddit(bot, user_agent='cs40')
         
     try:
 
@@ -215,16 +221,19 @@ while True:
         # This doesn't avoid rate limiting
         # (since we're not sleeping for a long period of time),
         # but it does make the program's output more readable.
-        time.sleep(random.randint(20,600))
+        wait_time = random.randint(12,180)
+        print('wait_time= ', wait_time)
+        time.sleep(wait_time)
 
     except Exception as e:
-        
+
         print('ERROR: ' + str(e))
+        sec = 0
 
         try:
-            sec = int(str(e)[str(e).find('for ')+4:str(e).find('for ')+6])
+            sec = int(str(e)[str(e).find('for ')+4:str(e).find(' ', str(e).find('for ')+4)])
             if 'seconds' in str(e):
-                continue
+                pass
             else:
                 sec = sec*60
             print('wait for ' + str(sec))
