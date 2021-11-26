@@ -6,7 +6,9 @@ The main body of the project then consists of the following files:
 * `bot.py` - the script responsible for posting comments and replies 
 * `submission_bot.py` - the script responsible for (re)posting new submissions to a subreddit
 * `bot_counter.py` - the script provided by [@mikeizbicki](https://github.com/mikeizbicki) to calculate 'valid' and other comments
-
+* `gen_test.py` - separate script with the comment generating function employing `markovify` library
+* `model_data.txt` - sufficiently cleaned and appended transcription of 11 years of Trump's tweets and his 2020's rally speeches that is used as the learning dataset for the `markovify` model
+ 
 ## Known Problems + TO-DO
 * The dataset for the Markov Chain model is not big enough to be able to take the context of the comment that it is replying to into account. This could be solved by obtaining more data or by only replying to comments with certain words/names in it. Overall, a simple fix that could, however, limit the number of valid comments posted, so it was not implemented.
 * Insdufficent in-script documentation.
