@@ -12,7 +12,6 @@ The main body of the project then consists of the following files:
  
 ## Known Problems + TO-DO
 * The dataset for the Markov Chain model is not big enough to be able to take the context of the comment that it is replying to into account. This could be solved by obtaining more data or by only replying to comments with certain words/names in it. Overall, a simple fix that could, however, limit the number of valid comments posted, so it was not implemented.
-* Insdufficent in-script documentation.
 * While the script was never once stopped by Reddit thanks to rotating several bots, it has a error parsing portion that sleeps the script for the amount of time required by Reddit. However, this part of the code was implemented before the multi-bot feature, and it is not updated to work with it efficiently (if one bot gets stopped, the whole script waits instead of immediately trying a new bot). A potential solution would be to completely ommit the error parsing wait portion of the code and just let the script keep trying new bots.
 
 
@@ -53,7 +52,7 @@ NOTE: the number valid_comments is what will be used to determine your extra cre
 `submission_bot.py` posts new submissions on a selected subreddit. There are 3 types of submissions from which the bot chooses randomly: 1) Self post using `markovify` to generate its title and body. 2) Random reddit repost from a given subreddit (r/conservative in this case). 3) 'Indirect' repost from a given subreddit (r/conservative in this case) where it copies the title and the text/url of a random submission. Over 200 hundred submissions were posted by one of my bots at r/BotTown_polibot where I have moderator rights and could count them + additional submissions were posted on r/BotTown2. Overall, fulfilling the requirements of the task.
 
 * __5. Create an "army" of 5 bots that are all posting similar comments. - 2/2__  
-I have deployed 5 bots that all used the same code. In fact, the `bot.py` file would randomly select one of the bots (possible to use a subest) for each iteration. This allowed the bots to 'comunicate' with each other, saved computing resources, and helped to prevent hitting the Reddit post rate limit of individual bots. All bots posted 500+ valid comments (see below). The reason why the number of valid comments and total comments sometimes differ is because I had them post on my own subreddit where some of their comments got automatically blocked, became temporarily deleted (during this time, the bots could reply again to the same thread), and I later approved those comments not realizing what it would cause.  
+I have deployed 5 bots (`bot.py`) that all used the same code. In fact, the `bot.py` file would randomly select one of the bots (possible to use a subest) for each iteration. This allowed the bots to 'comunicate' with each other, saved computing resources, and helped to prevent hitting the Reddit post rate limit of individual bots. All bots posted 500+ valid comments (see below). The reason why the number of valid comments and total comments sometimes differ is because I had them post on my own subreddit where some of their comments got automatically blocked, became temporarily deleted (during this time, the bots could reply again to the same thread), and I later approved those comments not realizing what it would cause.  
 <details>
   <summary>Bot Counter Outputs (in addition to the main bot above)</summary>
     
@@ -117,7 +116,7 @@ NOTE: the number valid_comments is what will be used to determine your extra cre
 </details>
 
 * __6. Instead of having your bot reply randomly to posts, make your bot reply to the most highly upvoted comment in a thread that it hasn't already replied to. 2/2__  
-This feature is implemented by sorrtig comments with no replies by the number of upvotes in the following way: `comments_without_replies.sort(key=lambda comment: comment.score, reverse=True)`
+This feature is implemented (in `bot.py`) by sorrtig comments with no replies by the number of upvotes in the following way: `comments_without_replies.sort(key=lambda comment: comment.score, reverse=True)`
 
 * __7. Have your bot upvote any comment or submission that mentions your favorite candidate (or downvote submission mentioning a candidate you do not like). ~3/4__  
 Implemented in `vote_bot.py`. I have tested this feature on the subreddits created for this purpose. After reading the documentation and Reddit's TOS, I believe this goes againts the laws anytime, when the script does not just forward a human made action (i.e., voting based on you voting in your environment that uses `praw`). I believe that using it at private subreddits for educational purposes without posing any harm to the service falls under "Fair/Noninfringing Uses." However, due to the uncertainty about this I have not collected the required number of votes.
