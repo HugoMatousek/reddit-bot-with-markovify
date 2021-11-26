@@ -1,5 +1,16 @@
 # reddit-bot-with-markovify
+## General Info
+This project was done as a homework for CMC's [CSCI40 course](https://github.com/mikeizbicki/cmc-csci040/tree/2021fall/hw_04). The project's goal was to create a reddit bot that would post comments and/or submissions about a chosen politican. Given that I have decided to employ [`markovify`](https://github.com/jsvine/markovify) library to generate my comments and used Trump's tweets and speeches as my learning data set, the comments are "as if written by Trump" talking about various topics (including himself and other politicans).  
+The project consists of several parts. The folder `Trump_data` includes datasets ([#1](https://www.kaggle.com/christianlillelund/donald-trumps-rallies), [#2](https://data.world/pathologicalhandwaving/trumptweets), [#3](https://data.world/lovesdata/trump-tweets-5-4-09-12-5-16)) that were used to generate the Markov chain model. In the folder, there are also several simple scripts that were used to clean the data and prepare them for the model.  
+The main body of the project then consists of the following files:
+* `bot.py` - the script responsible for posting comments and replies 
+* `submission_bot.py` - the script responsible for (re)posting new submissions to a subreddit
+* `bot_counter.py` - the script provided by [@mikeizbicki](https://github.com/mikeizbicki) to calculate 'valid' and other comments
 
+## Known Problems + TO-DO
+* The dataset for the Markov Chain model is not big enough to be able to take the context of the comment that it is replying to into account. This could be solved by obtaining more data or by only replying to comments with certain words/names in it. Overall, a simple fix that could, however, limit the number of valid comments posted, so it was not implemented.
+* Insdufficent in-script documentation.
+* While the script was never once stopped by Reddit thanks to rotating several bots, it has a error parsing portion that sleeps the script for the amount of time required by Reddit. However, this part of the code was implemented before the multi-bot feature, and it is not updated to work with it efficiently (if one bot gets stopped, the whole script waits instead of immediately trying a new bot). A potential solution would be to completely ommit the error parsing wait portion of the code and just let the script keep trying new bots.
 
 
 
@@ -13,7 +24,9 @@ Comment: My bot program uses `markovify` that was trained on Trump tweets (circa
 Some of the 'conversations' between my bots were really funny. For example, [this one](https://old.reddit.com/r/BotTown_polibot2/comments/r1lx1a/hillary_had_a_great_evening/hlzq5g9/). It nicely combines the Trump tweets data with his speeches and somewhat feels like actual Trump comments. To quute my bot: "So here's what happened, and we'll never forget that."
 <details>
   <summary>Reddit Bot Conversation Screenshot</summary>
+  
   ![image](https://user-images.githubusercontent.com/63810577/143516970-172f3aa2-a9c7-4d03-866e-64c3a7679fbd.png)
+  
 </details>
 
 ### Optional Tasks
@@ -43,6 +56,7 @@ I have deployed 5 bots that all used the same code. In fact, the `bot.py` file w
     
   ```
   polibot-cs40:
+  
   len(comments)= 609
 len(top_level_comments)= 69
 len(replies)= 540
@@ -54,8 +68,45 @@ valid_comments= 609
 ========================================
 NOTE: the number valid_comments is what will be used to determine your extra credit
   
+  
   polibot-cs40_1:
   
+  len(comments)= 1000
+len(top_level_comments)= 62
+len(replies)= 938
+len(valid_top_level_comments)= 60
+len(not_self_replies)= 938
+len(valid_replies)= 938
+========================================
+valid_comments= 998
+========================================
+NOTE: the number valid_comments is what will be used to determine your extra credit
+  
+  polibot-cs40_2:
+  
+  len(comments)= 1000
+len(top_level_comments)= 85
+len(replies)= 915
+len(valid_top_level_comments)= 82
+len(not_self_replies)= 915
+len(valid_replies)= 915
+========================================
+valid_comments= 997
+========================================
+NOTE: the number valid_comments is what will be used to determine your extra credit
+  
+  polibot-cs40_3:
+  
+  len(comments)= 1000
+len(top_level_comments)= 60
+len(replies)= 940
+len(valid_top_level_comments)= 58
+len(not_self_replies)= 940
+len(valid_replies)= 940
+========================================
+valid_comments= 998
+========================================
+NOTE: the number valid_comments is what will be used to determine your extra credit 
   
   
   ```
