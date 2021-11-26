@@ -15,8 +15,8 @@ bot_name = 'polibot-cs40_1'
 reddit = praw.Reddit('bot2', user_agent='cs40')
 
 # define "negative" and "postive" politicans for upvoting for negative sentiment and downvoting for positive sentiment and vice versa, respectively
-neg_list = ['Biden', 'Joe', 'Hillary', 'Clinton', 'Democrats', 'Bernie']
-pos_list = ['GOP', 'Republicans']
+neg_list = ['Biden', 'Joe', 'Hillary', 'Clinton', 'Democrats', 'Bernie', 'AOC', 'Democrat',]
+pos_list = ['GOP', 'Republican', 'Marco Rubio', 'Pence']
 
 # run forever, check one comment/submission each iteration
 while True:
