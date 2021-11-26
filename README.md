@@ -6,6 +6,7 @@ The main body of the project then consists of the following files:
 * `bot.py` - the script responsible for posting comments and replies 
 * `submission_bot.py` - the script responsible for (re)posting new submissions to a subreddit
 * `bot_counter.py` - the script provided by [@mikeizbicki](https://github.com/mikeizbicki) to calculate 'valid' and other comments
+* `vote_bot.py` - the script used for casting votes based on selected mentions and sentiment analysis - running this might violate Reddit's TOC!
 * `gen_test.py` - separate script with the comment generating function employing `markovify` library
 * `model_data.txt` - sufficiently cleaned and appended transcription of 11 years of Trump's tweets and his 2020's rally speeches that is used as the learning dataset for the `markovify` model
  
@@ -118,9 +119,12 @@ NOTE: the number valid_comments is what will be used to determine your extra cre
 * __6. Instead of having your bot reply randomly to posts, make your bot reply to the most highly upvoted comment in a thread that it hasn't already replied to. 2/2__  
 This feature is implemented by sorrtig comments with no replies by the number of upvotes in the following way: `comments_without_replies.sort(key=lambda comment: comment.score, reverse=True)`
 
+* __7. Have your bot upvote any comment or submission that mentions your favorite candidate (or downvote submission mentioning a candidate you do not like). ~3/4__  
+Implemented in `vote_bot.py`. I have tested this feature on the subreddits created for this purpose. After reading the documentation and Reddit's TOS, I believe this goes againts the laws anytime, when the script does not just forward a human made action (i.e., voting based on you voting in your environment that uses `praw`). I believe that using it at private subreddits for educational purposes without posing any harm to the service falls under "Fair/Noninfringing Uses." However, due to the uncertainty about this I have not collected the required number of votes.
+
 __5 extra credit optional tasks__
 * __Use a more sophisticated algorithm for generating the text of your comments. 5/5__  
 I am using the `markovify` library to generate my comments. I was thinking about using some subreddit (for example r/conservative) as the source of learning data. However, I have decided to use tweets by Donald J. Trump from 2009-2020 and his 2020 rally speaches because I came to the conclusion that his style of speech actually often sounds like a Markov chain, thus, making it more fun (and real looking). I cleaned the data and from the original datasets using `pandas` and `regex`. The sources of the datasets are listed above.
 
 
-#### Total points = 37/30
+#### Total points = 40/30
