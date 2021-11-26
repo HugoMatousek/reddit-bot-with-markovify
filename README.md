@@ -114,3 +114,13 @@ NOTE: the number valid_comments is what will be used to determine your extra cre
   ```
   
 </details>
+
+* __6. Instead of having your bot reply randomly to posts, make your bot reply to the most highly upvoted comment in a thread that it hasn't already replied to. 2/2__  
+This feature is implemented by sorrtig comments with no replies by the number of upvotes in the following way: `comments_without_replies.sort(key=lambda comment: comment.score, reverse=True)`
+
+__5 extra credit optional tasks__
+* __Use a more sophisticated algorithm for generating the text of your comments. 5/5__  
+I am using the `markovify` library to generate my comments. I was thinking about using some subreddit (for example r/conservative) as the source of learning data. However, I have decided to use tweets by Donald J. Trump from 2009-2020 and his 2020 rally speaches because I came to the conclusion that his style of speech actually often sounds like a Markov chain, thus, making it more fun (and real looking). I cleaned the data and from the original datasets using `pandas` and `regex`. The sources of the datasets are listed above.
+
+
+#### Total points = 37/30
