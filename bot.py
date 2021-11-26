@@ -1,3 +1,4 @@
+# imports
 from re import sub
 from types import ClassMethodDescriptorType
 import praw
@@ -7,229 +8,189 @@ import time
 import os
 import markovify
 
+# set path to the location of the script
 path = os.path.dirname(__file__)
 
-
-
-
-# FIXME:
-# copy your generate_comment function from the madlibs assignment here
+# read data for Markov chain model
 content = ''
 with open(path+'/model_data.txt', 'r', encoding='utf-8') as file:
      content = file.read()
 
+# create Markov chain model using the data in content 
 model = markovify.Text(content)
 
+# starting words for sentences
 starting_points = ['Biden', 'Sleepy Joe', 'Hillary', 'Democrats', 'Republicans', 'GOP', 'Trump', 'I think',]
 
+# function to generate comments using Markov chain/markovify library
 def generate_comment():
     comment = ''
 
+    #choose randomly between three types of comments
     i = random.randint(0,3)
 
+    # 1-4 markov chain sentences
     if i == 0:
         for j in range(0,random.randint(1,4)):
             comment = comment + model.make_sentence() + ' '
+    
+    # Markov chain sentence with a random starting point from the list
     if i == 1:
         comment = comment + model.make_sentence_with_start(random.choice(starting_points), strict=False) 
+
+    # 1-3 markov chain sentences with a starting point from the list    
     if i == 2:
         for j in range(0,random.randint(1,3)):
             comment = comment + model.make_sentence_with_start(random.choice(starting_points), strict=False) + ' '
+
+    # combination of 1-3 markov chain sentences with a starting point from the list + 1-4 markov chain sentences (for longer comments)        
     if i == 3:
         for j in range(0,random.randint(1,3)):
             comment = comment + model.make_sentence_with_start(random.choice(starting_points), strict=False) + ' '
         for j in range(0,random.randint(1,4)):
             comment = comment + model.make_sentence() + ' '
 
+    # signature stating that this is a bot (ideally, figure out a better Markdown formatting, reddit seems to ignore parsing characters with praw)
     signature = '''  
     --------  
     I am a bot that is based on the tweets and speeches of Donald J. Trump. [Github link.](https://github.com/HugoMatousek/reddit-bot-with-markovify)'''        
 
     comment = comment + signature
+
+    # return generated comment
     return(comment)
 
-
-
-
-
-
+# dic with all the bots' configuration in praw.ini and their respected reddit username
 bot_list = {'bot1':'polibot-cs40','bot2':'polibot-cs40_1','bot3':'polibot-cs40_2','bot4':'polibot-cs40_3','bot5':'polibot-cs40_4'}
 
-
-
-# FIXME:
-# select a "home" submission in the /r/BotTown subreddit to post to,
-# and put the url below
-#submission_url = 'https://old.reddit.com/r04cv3'
-#submission = reddit.submission(url=submission_url)
-
-# each iteration of this loop will post a single comment;
-# since this loop runs forever, your bot will continue posting comments forever;
-# (this is what makes it a deamon);
-# recall that you can press CTRL-C in the terminal to stop your bot
-#
-# HINT:
-# while you are writing and debugging your code, 
-# you probably don't want it to run in an infinite loop;
-# you can change this while loop to an if statement to make the code run only once
-
+# endless loop that should post a comment/reply each iteration
 while True:
 
-    # FIXME:
-    # connect to reddit 
+    # randomly chose a bot 1-5 and save its reddit username to bot_name
     bot = 'bot' + str(random.randint(1,5))
     bot_name = bot_list[bot]
 
+    print('\n')
+
+    # identify which bot will be used for the next iteration
     print('bot: '+bot + ' \nbotname: ' + bot_name)    
 
+    # start praw/reddit with the given bot
     reddit = praw.Reddit(bot, user_agent='cs40')
-        
+
+    # mainly for hitting rate limit or other unexpected mistake    
     try:
 
-        subreddit = reddit.subreddit("BotTown")
+        # choose a subreddit to which you will be posting
+        subreddit = reddit.subreddit("BotTown_polibot2")
 
+        # TASK 5 - COMPLETED
+        # choosing a random submission, here you can select which submissions the bot should be contributing to
+        # currently, it loads the 'hottest' ten (including the sticky submissions) and selects the first five not sticky
         num_sub = 0
         sub_list = []
-        for submission in subreddit.hot(limit=10):
+        for submission in subreddit.hot(limit=20):
             print(submission.title)
-            if not submission.is_self:
+            if not submission.stickied: 
                 sub_list.append(submission)
                 num_sub += 1
             if num_sub == 5:
                 break
-
+        
+        # chooses a random submission from the list generated above
         submission = random.choice(sub_list)
 
         # printing the current time will help make the output messages more informative
-        # since things on reddit vary with time
-        print()
         print('new iteration at:',datetime.datetime.now())
         print('submission.title=',submission.title)
         print('submission.id=',submission.id)
         print('submission.url=',submission.url)
 
-        # FIXME (task 0): get a list of all of the comments in the submission
-        # HINT: this requires using the .list() and the .replace_more() functions
+        # TASK 0, TASK 1 - COMPLETED
+        # load all comments in a submission
         submission.comments.replace_more(limit=None)
 
+        # lists for all comments and list of comments not posted by the bot
         all_comments = []
         not_my_comments = []
 
+        # iterate over all comments
         for comment in submission.comments.list():
+            # add a comment to all_comments unless it was deleted (author == None)
             if str(comment.author) != 'None':
                 all_comments.append(comment)
+            # add a comment to not_my_comments unless by the not (author == bot_name)
             if str(comment.author) != bot_name:
                 not_my_comments.append(comment)
 
-        
-        # HINT: 
-        # we need to make sure that our code is working correctly,
-        # and you should not move on from one task to the next until you are 100% sure that 
-        # the previous task is working;
-        # in general, the way to check if a task is working is to print out information 
-        # about the results of that task, 
-        # and manually inspect that information to ensure it is correct; 
-        # in this specific case, you should check the length of the all_comments variable,
-        # and manually ensure that the printed length is the same as the length displayed on reddit;
-        # if it's not, then there are some comments that you are not correctly identifying,
-        # and you need to figure out which comments those are and how to include them.
+        # print the num of all/not_my_comments
         print('len(all_comments)=',len(all_comments))
-
-        # FIXME (task 1): filter all_comments to remove comments that were generated by your bot
-        # HINT: 
-        # use a for loop to loop over each comment in all_comments,
-        # and an if statement to check whether the comment is authored by you or not
-        
-
-        # HINT:
-        # checking if this code is working is a bit more complicated than in the previous tasks;
-        # reddit does not directly provide the number of comments in a submission
-        # that were not gerenated by your bot,
-        # but you can still check this number manually by subtracting the number
-        # of comments you know you've posted from the number above;
-        # you can use comments that you post manually while logged into your bot to know 
-        # how many comments there should be. 
         print('len(not_my_comments)=',len(not_my_comments))
 
-        # if the length of your all_comments and not_my_comments lists are the same,
-        # then that means you have not posted any comments in the current submission;
-        # (your bot may have posted comments in other submissions);
-        # your bot will behave differently depending on whether it's posted a comment or not
+        # checks whether the two are the same and saves as True/False, if so, it means that no comment in the submission is by the bot
         has_not_commented = len(not_my_comments) == len(all_comments)
 
+        # TASK 2 - COMPLETED
+        # if not comment has been posted to the submission, submit a new top-level comment 
         if has_not_commented:
-            # FIXME (task 2)
-            # if you have not made any comment in the thread, then post a top level comment
-            #
-            # HINT:
-            # use the generate_comment() function to create the text,
-            # and the .reply() function to post it to reddit;
-            # a top level comment is created when you reply to a post instead of a message
             submission.reply(generate_comment())
 
+        # if already commented, try to find a comment to which the bot has not replied yet and reply to it
         else:
-            # FIXME (task 3): filter the not_my_comments list to also remove comments that 
-            # you've already replied to
-            # HINT:
-            # there are many ways to accomplish this, but my solution uses two nested for loops
-            # the outer for loop loops over not_my_comments,
-            # and the inner for loop loops over all the replies of the current comment from the outer loop,
-            # and then an if statement checks whether the comment is authored by you or not
+
+            #TASK 3 - COMPLETED
             comments_without_replies = []
             for comment in not_my_comments:
-                child_comments = comment.replies
 
+                # check for the replies to the selected comment
+                child_comments = comment.replies
+                # if not replies have been posted, the bot has not replied to it and so it can in this iteration, add to the list
                 if len(child_comments) == 0:
                     comments_without_replies.append(comment)
+                # if there are replies to the comment, check if one of them is of the bot
                 else:
+                    # assume the bot has not replied to the comment
                     no_replies = True
-                    
+                    # check all the replies                    
                     for child_comment in child_comments:
-
+                        # check if the both is the author of the reply, if so, correct the assumption
                         if child_comment.author == bot_name:
                             no_replies = False
+                    # if none of the replies is authored by the bot, add this reply to the list of possible comments to reply to
                     if no_replies == True:        
                         comments_without_replies.append(comment)
-
-            # HINT:
-            # this is the most difficult of the tasks,
-            # and so you will have to be careful to check that this code is in fact working correctly
+            # print the number of comments that the not can reply to
             print('len(comments_without_replies)=',len(comments_without_replies))
 
-            # FIXME (task 4): randomly select a comment from the comments_without_replies list,
-            # and reply to that comment
-            #
-            # HINT:
-            # use the generate_comment() function to create the text,
-            # and the .reply() function to post it to reddit;
-            # these will not be top-level comments;
-            # so they will not be replies to a post but replies to a message
+            # TASK 4 - COMPLETED
+            # pick one of the comments that the bot can reply to and reply to it
             try:
-                random.choice(comments_without_replies).reply(generate_comment())
+                # sort the comments by the number of upvotes
+                comments_without_replies.sort(key=lambda comment: comment.score, reverse=True)
+                # reply to most upvoted comment
+                comments_without_replies[0].reply(generate_comment())
+                # random pick alternative
+                #random.choice(comments_without_replies).reply(generate_comment())
+            # if there are not comments to reply to, print the info and the error and continue without replying
             except Exception as e:
                 print('ERROR: There are probably no comments without replies. The full error:\n' + str(e))
-            pass
 
-        # FIXME (task 5): select a new submission for the next iteration;
-        # your newly selected submission should be randomly selected from the 5 hottest submissions
-
-        
-
-
-
-        # We sleep just for 1 second at the end of the while loop.
-        # This doesn't avoid rate limiting
-        # (since we're not sleeping for a long period of time),
-        # but it does make the program's output more readable.
-        wait_time = random.randint(12,180)
+        # randomly generate a waiting time, print this info        
+        wait_time = random.randint(20,60)
         print('wait_time= ', wait_time)
         time.sleep(wait_time)
 
+    # in case of the exception (likely hitting the rate limit) print the error and employ waiting
+    # !!! this portion was done before expanding the script into multi-bot script, currently, this is not an efficient solution
+    # probably, the more efficient would be to completely remove this
+    # however, if I have time later, I will update it so that it iterates over the other bots and only waits if all the bots hit the rate limit
+    # in posting more than 6000 comments, the rate limit was not hit once, so there is no pressure on fixing this
+    # especially since it makes sure that the code keeps running even if some other problem occurs
     except Exception as e:
 
         print('ERROR: ' + str(e))
         sec = 0
-
+        # try to parse the error message for the time needed to wait
         try:
             sec = int(str(e)[str(e).find('for ')+4:str(e).find(' ', str(e).find('for ')+4)])
             if 'seconds' in str(e):

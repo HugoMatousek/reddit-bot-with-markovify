@@ -4,13 +4,13 @@ import praw
 # parse command line args
 parser = argparse.ArgumentParser(description='Debug/grading script for bot assignment')
 parser.add_argument('--username', required=True)
-parser.add_argument('--praw_name', default='bot1')
+parser.add_argument('--praw_name', default='bot4')
 args = parser.parse_args()
 
 # FIXME:
 # the praw instance needs access to a valid praw.ini file 
 # with a login credentials section called "bot"
-reddit = praw.Reddit(args.praw_name, user_agent='cs40')
+reddit = praw.Reddit(args.praw_name)
 redditor = reddit.redditor(name = args.username)
 
 # calculate and print the total number of comments that args.username has created
